@@ -85,9 +85,85 @@ The voice assistant uses Vapi SDK to create and manage voice conversations. The 
 // Initializing Vapi instance
 const vapiInstance = new Vapi(process.env.NEXT_PUBLIC_VAPI_API_KEY!);
 
-// Starting a conversation
+// Starting a conversation with default assistant
 vapiInstance.start(process.env.NEXT_PUBLIC_VAPI_ASSISTANT_ID!);
+
+// Or with custom configuration
+vapiInstance.start({
+  model: {
+    provider: "openai",
+    model: "gpt-4o-mini",
+    temperature: 0.5,
+    messages: [
+      {
+        role: "system",
+        content: "Your system prompt here"
+      }
+    ]
+  },
+  voice: {
+    provider: "vapi",
+    voiceId: "Cole"
+  },
+  transcriber: {
+    provider: "deepgram",
+    model: "nova-3",
+    language: "en",
+    endpointing: 300
+  },
+  firstMessage: "Hello, I'm here to help you!",
+  endCallMessage: "Thank you for the conversation. Have a great day!",
+  startSpeakingPlan: {
+    waitSeconds: 1.2,
+    smartEndpointingEnabled: "livekit"
+  }
+});
+
+// Event Listeners
+vapiInstance.on('call-start', () => {
+  console.log('Call started');
+});
+
+vapiInstance.on('call-end', () => {
+  console.log('Call ended');
+});
+
+vapiInstance.on('speech-start', () => {
+  // Update UI to show assistant is speaking
+});
+
+vapiInstance.on('speech-end', () => {
+  // Update UI to show assistant finished speaking
+});
+
+vapiInstance.on('message', (message) => {
+  // Handle transcripts and assistant responses
+  console.log('Message:', message);
+});
+
+vapiInstance.on('error', (error) => {
+  console.error('Error:', error);
+});
 ```
+
+### Assistant Configuration
+
+The application uses a configured Vapi assistant with the following settings:
+
+- **Model**: GPT-4o-mini with temperature 0.5
+- **Voice**: Cole (provided by Vapi)
+- **Transcription**: Deepgram Nova-3 with English language support
+- **Smart Endpointing**: Enabled using Livekit
+- **Features**:
+  - HIPAA Compliance: Disabled
+  - Backchanneling: Disabled
+  - Background Denoising: Disabled
+  - Smart Endpointing: Enabled
+
+The assistant includes configurable messages for:
+- First Message: Initial greeting
+- Voicemail Message: Used when calls are missed
+- End Call Message: Farewell message when ending conversations
 
 ### 3D Robot Visualization
 
